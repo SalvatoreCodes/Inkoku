@@ -8,3 +8,7 @@
 - Signed release APK built with Android Gradle Plugin 8.10.1 and SDK 36.
 - Android lint: zero errors. Informational warnings: newer Gradle available, and JavaScript enabled for the bundled game. WebView blocks external requests and has no native JavaScript bridge.
 - No Android device or emulator was available. APK runtime on Android remains unverified.
+
+## Release 1.0.1
+- Empty, full nine-candidate, erased, and refilled cell sizes remained identical at 320px and 390px viewport widths. Board rows remain equal.
+- Signed release APK built using the original signing key.

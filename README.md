@@ -4,7 +4,7 @@ An offline Android Sudoku game. Quiet screens, tactile number controls, no subti
 
 ## Download
 
-Install **Inkoku-1.0.0.apk** from [GitHub Releases](https://github.com/SalvatoreCodes/Inkoku/releases/latest). Android 8.0 or newer. Allow installation from your browser or file manager when Android requests it.
+Install **Inkoku-1.0.1.apk** from [GitHub Releases](https://github.com/SalvatoreCodes/Inkoku/releases/latest). Android 8.0 or newer. Allow installation from your browser or file manager when Android requests it.
 
 ## Play
 
