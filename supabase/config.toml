@@ -1,0 +1,20 @@
+project_id = "sudoku"
+[auth]
+enabled = true
+site_url = "sudoku://auth/callback"
+additional_redirect_urls = ["sudoku://auth/callback"]
+jwt_expiry = 3600
+enable_signup = true
+minimum_password_length = 8
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+max_frequency = "1m"
+otp_length = 8
+enable_confirmations = false
+[functions.sudoku-api]
+verify_jwt = false
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true

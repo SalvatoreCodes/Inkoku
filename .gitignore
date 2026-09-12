@@ -6,3 +6,6 @@ dist/
 node_modules/
 test-results/
 *.log
+
+supabase/.temp/
+supabase/.branches/
