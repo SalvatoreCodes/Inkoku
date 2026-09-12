@@ -1,4 +1,14 @@
+import {createActivityTracker} from './activity.js';
 import {BACKEND} from './backend-config.js';
+const activity=createActivityTracker(detail=>window.dispatchEvent(new CustomEvent('sudoku-network',{detail})));
+function requestLabel(path,body){
+ if(path.includes('grant_type=password'))return 'Signing in…';
+ if(path.includes('/signup'))return 'Creating account…';
+ if(path.includes('/logout'))return 'Signing out…';
+ if(path.includes('grant_type=refresh_token'))return 'Reconnecting…';
+ if(path.includes('/auth/v1/user'))return body?'Updating password…':'Checking account…';
+ return {start:'Preparing puzzle…',finish:'Posting score…',profile:'Saving profile…',rename:'Saving name…',scores:'Loading scores…',me:'Loading profile…'}[body?.action]||'Connecting…';
+}
 const SESSION_KEY='sudoku.auth.v1';
 let session=null,refreshing=null;
 try{session=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');}catch{}
@@ -13,6 +23,7 @@ export function friendlyError(error){
 }
 async function request(path,body,{method='POST',token=null}={}){
  if(!configured())throw new Error('Online accounts are not configured yet.');
+ const endActivity=activity.begin(requestLabel(path,body));
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
  try{
   const headers={'apikey':BACKEND.key,'Content-Type':'application/json'};
@@ -21,7 +32,7 @@ async function request(path,body,{method='POST',token=null}={}){
   const data=await response.json().catch(()=>({}));
   if(!response.ok){const error=new Error(data.msg||data.error_description||data.message||data.error||'Request failed');error.status=response.status;throw error;}
   return data;
- }finally{clearTimeout(timer);}
+ }finally{clearTimeout(timer);endActivity();}
 }
 async function accept(data){
  if(!data.access_token)return false;

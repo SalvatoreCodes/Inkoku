@@ -3,6 +3,16 @@ import {LEVELS,levelOf,ITEMS,DEFAULTS,itemById,unlocked,equip,migrateProfile,rew
 import {escapeHTML,avatar,profileCard,progressCard,journeyContent,collectionContent,scoreboardContent,preview} from './social-ui.js';
 import {DIFFICULTIES,RANKS,THRESHOLDS,generate,newGame,enter,erase,undo,dateKey,dateSeed,profileDefault,rankOf,award,peers} from './engine.js';
 const $=s=>document.querySelector(s);
+const networkStatus=document.createElement('div');
+networkStatus.id='network-status';networkStatus.hidden=true;networkStatus.setAttribute('role','status');networkStatus.setAttribute('aria-live','polite');
+networkStatus.innerHTML='<span class="activity-spinner" aria-hidden="true"></span><span></span>';
+document.body.appendChild(networkStatus);
+window.addEventListener('sudoku-network',({detail})=>{
+ networkStatus.hidden=detail.count===0;
+ networkStatus.lastElementChild.textContent=detail.label;
+ networkStatus.setAttribute('aria-busy',String(detail.count>0));
+});
+
 const icons={
  arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
  back:'<path d="m14 6-6 6 6 6"/>',
@@ -257,8 +267,15 @@ function authModal(mode){
 }
 document.addEventListener('submit',async e=>{
  if(e.target.id!=='auth-form'&&e.target.id!=='profile-form')return;e.preventDefault();
+ if(e.target.dataset.submitting==='true')return;
  const form=e.target,button=form.querySelector('[type="submit"]'),status=form.querySelector('.form-status'),data=new FormData(form);
- button.disabled=true;status.textContent='';
+ const originalButton=button.innerHTML;
+ form.dataset.submitting='true';form.setAttribute('aria-busy','true');
+ button.disabled=true;button.classList.add('is-loading');
+ const busyLabel=form.id==='profile-form'?'Saving…':{login:'Signing in…',signup:'Creating account…',recover:'Sending…',password:'Updating…'}[form.dataset.mode];
+ button.innerHTML='<span class="activity-spinner" aria-hidden="true"></span><span>'+busyLabel+'</span>';
+ status.textContent='';
+
  try{
   if(form.id==='profile-form'){
    const displayName=String(data.get('displayName')).trim();
@@ -270,7 +287,7 @@ document.addEventListener('submit',async e=>{
   if(mode==='recover'){await Auth.recover(email);status.textContent='If this account exists, check your email for the reset link.';}
   if(mode==='password'){await Auth.changePassword(password);closeModal();toast('Password updated');}
  }catch(error){status.textContent=Auth.friendlyError(error);}
- finally{button.disabled=false;}
+ finally{button.disabled=false;button.innerHTML=originalButton;button.classList.remove('is-loading');delete form.dataset.submitting;form.removeAttribute('aria-busy');}
 });
 async function loadAccount(){
  const id=owner;if(!id)return;

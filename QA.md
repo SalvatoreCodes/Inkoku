@@ -39,3 +39,8 @@ Temporary QA accounts only; removed after verification, including their scores.
 ## Previous release regression
 
 Version 1.0.1 locked all board tracks and positioned notes inside each cell. Empty and full nine-note cells retained identical dimensions at 320px and 390px widths. These sizing rules remain in 2.0.
+
+## Version 2.0.1 loading feedback
+- Delayed login and signup requests showed animated button spinners and busy status; repeat form submission sent only one request.
+- Failed requests restored buttons and cleared loading indicators.
+- Two new tracker tests cover overlapping requests, idempotent completion, and failure cleanup. Total: 15 tests.
