@@ -1,0 +1,2 @@
+import {generate} from './engine.js';
+self.onmessage=({data})=>{try{self.postMessage({id:data.id,result:generate(data.difficulty,data.seed)});}catch(e){self.postMessage({id:data.id,error:e.message});}};
